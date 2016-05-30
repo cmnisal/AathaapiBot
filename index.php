@@ -306,6 +306,7 @@ function send_response($input_raw) {
             if(!$verified){
     		send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Change any Display Name.`"));
     		return;
+			}
             $filename = substr($bot_reply,strpos($bot_reply,'-')+2);
 
             $file = new stdClass();
