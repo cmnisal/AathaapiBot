@@ -32,7 +32,7 @@ function build_keyboard($chat_id, $text, $message_id, $markup) {
 function hide_keyboard($chat_id,$message_id) {
     $markup['hide_keyboard'] = true;
     $markup['selective'] = true;
-    $returnvalue = 'https://api.telegram.org/bot'.$GLOBALS['token'].'/sendMessage?chat_id='. $chat_id  . '&reply_to_message_id=' . $message_id . '&text=👍&reply_markup=' . json_encode($markup);
+    $returnvalue = 'https://api.telegram.org/bot'.$GLOBALS['token'].'/sendMessage?chat_id='. $chat_id  . '&reply_to_message_id=' . $message_id . '&text=Cancelled !&reply_markup=' . json_encode($markup);
     error_log($returnvalue);
     return $returnvalue;
 }
@@ -286,9 +286,9 @@ function send_response($input_raw) {
             $db->insertObject('aathaapi_files', $new_file);
 
             $file = new stdClass();
-            $file->name = $filename;
+            $file->file_id = $file_id;
             $file->active = 1;
-            $db->updateObject('aathaapi_files',$file,'name');
+            $db->updateObject('aathaapi_files',$file,'file_id');
             $reply = urlencode("`Enter display name for` - *".$file_name."*");
             send_curl(build_forcereply($chat_id,$reply,$message_id));
         }else{
