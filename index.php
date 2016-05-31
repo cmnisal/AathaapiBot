@@ -261,9 +261,11 @@ function send_response($input_raw) {
         if(array_key_exists('audio', $messageobj['message'])){
             $file = $messageobj['message']['audio'];
             $file_name = $file['title'].".mp3";
+			$display_name = str_replace("_"," ",$file['title']);
         }else{
             $file = $messageobj['message']['document'];
             $file_name = $file['file_name'];
+			$display_name = str_replace("_"," ",$file['file_name']);
         }
 
         $db->setQuery("SELECT * FROM aathaapi_files WHERE name = '$file_name' AND active = 1");
@@ -280,7 +282,7 @@ function send_response($input_raw) {
             $new_file = new stdClass();
             $new_file->file_id = $file_id;
             $new_file->name = $file_name;
-            $new_file->display_name = $file_name;
+            $new_file->display_name = str_replace("_"," ",$file_name);
             $new_file->filetype = $file_type;
             $new_file->user = $username;
             $db->insertObject('aathaapi_files', $new_file);
