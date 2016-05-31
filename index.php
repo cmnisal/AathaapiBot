@@ -264,7 +264,7 @@ function send_response($input_raw) {
 			$display_name = str_replace("_"," ",$file['title']);
         }else{
             $file = $messageobj['message']['document'];
-            $file_name = $file['file_name'];
+            $file_name = str_replace("_"," ",$file['file_name']);
 			$filebroken = explode( '.', $file_name);
 			$extension = array_pop($filebroken);
 			$display_name = implode('.', $filebroken);
