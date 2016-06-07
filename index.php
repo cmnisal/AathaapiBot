@@ -32,8 +32,8 @@ function build_keyboard($chat_id, $text, $message_id, $markup) {
 function hide_keyboard($chat_id,$message_id) {
     $markup['hide_keyboard'] = true;
     $markup['selective'] = true;
-    $returnvalue = 'https://api.telegram.org/bot'.$GLOBALS['token'].'/sendMessage?chat_id='. $chat_id  . '&reply_to_message_id=' . $message_id . '&text=Cancelled !&reply_markup=' . json_encode($markup);
-    error_log($returnvalue);
+    $returnvalue = 'https://api.telegram.org/bot'.$GLOBALS['token'].'/sendMessage?chat_id='. $chat_id  . '&reply_to_message_id=' . $message_id . '&text=List Cancelled !&reply_markup=' . json_encode($markup);
+    //error_log($returnvalue);
     return $returnvalue;
 }
 function find_with_display_name($find_keyword,$chat_id){
@@ -49,11 +49,14 @@ function find_with_display_name($find_keyword,$chat_id){
         send_curl(build_document($chat_id,$file_id));
     }
 }
+function error_report($error){
+	send_curl(build_reply(-1001054269939,urlencode("`".$error."`")));
+}
 function find($chat_id,$find_keyword,$message_id){
     $db = dbAccess::getInstance();
     $find_keyword = str_replace(' ','%',$find_keyword);
     $query = "SELECT * FROM aathaapi_files WHERE (name LIKE '%".$find_keyword."%' OR display_name LIKE '%".$find_keyword."%' ) AND active = 1 ORDER BY display_name";
-    error_log($query);
+    //error_log($query);
     $db->setQuery($query);
     $file_exist = $db->loadAssocList();
     if(empty($file_exist)){
@@ -86,7 +89,7 @@ function find($chat_id,$find_keyword,$message_id){
                     $button_text = "📦 ";
             }
             $button_text .= $file_exist[$i]['display_name'];
-            error_log($button_text);
+            //error_log($button_text);
             $keyboard['keyboard'][$i+1][0] = urlencode($button_text);
         }
         send_curl(build_keyboard($chat_id,"`".count($file_exist)." file(s) found!`", $message_id, $keyboard));
@@ -97,7 +100,7 @@ function delete_find($chat_id,$message_id){
     $db = dbAccess::getInstance();
     $find_keyword = str_replace(' ','%',$find_keyword);
     $query = "SELECT * FROM aathaapi_files WHERE active = 1 ORDER BY display_name";
-    error_log($query);
+    //error_log($query);
     $db->setQuery($query);
     $file_exist = $db->loadAssocList();
     if(empty($file_exist)){
@@ -130,6 +133,7 @@ function delete($filename,$chat_id){
 `Display name -` *".$check_file['display_name']."*
 `File type    -` *".ucfirst($check_file['filetype']."*"));
     send_curl(build_reply($chat_id,$reply));
+	send_curl(build_reply($chat_id,$reply));
 
     $file = new stdClass();
     $file->name = $filename;
@@ -172,7 +176,7 @@ function send_response($input_raw) {
                           "id": 38722085,
                           "first_name": "Ramindu \"RamdeshLota\"",
                           "last_name": "Deshapriya",
-                          "username": "Nisal"
+                          "username": "CMNisal"
                         },
                         "chat": {
                           "id":38722085,
@@ -191,15 +195,24 @@ function send_response($input_raw) {
     $chat_id = $messageobj['message']['chat']['id'];
     $user_id = $messageobj['message']['from']['id'];
     $username = $messageobj['message']['from']['username'];
+	$name = $messageobj['message']['from']['first_name']." ".$messageobj['message']['from']['last_name'];
     $message_id = $messageobj['message']['message_id'];
-    $admin = in_array($username,array("Nisal","CMNisal","RASMR","saminda"));
-    $verified = in_array($chat_id,array(196536622,59436507,132666396,120125309,-145097544)) || $admin;
+    $admin = in_array($username,array("Nisal","CMNisal","RASMR"));
+    $verified = (in_array($chat_id,array(196536622,59436507,132666396,120125309,-145097544)) || $admin);
     //chat_id - (Nisal,Sarani,Saminda,Amila,Aathaapi TEST)
 
     if($request_message=="/help" || $request_message=="/start"){
-        $reply = urlencode(' Welcome to   *Aathaapi Download Manager*
+        $reply = urlencode(' Welcome to		
+*Aathaapi Download Manager*
 
 /find _<keyword>_ -  Find files Match with Given Keyword. 
+        eg:- /find _Tathagata Bala_
+
+/find _Bana_ - *Find all Bana*
+/find _Video_ - *Find all Videos*
+/find _Chart_ - *Find all Charts*
+/find _Book_ - *Find all Books*	
+		
 /help  	-	Show this Dialog. 
 ');
 
@@ -207,8 +220,10 @@ function send_response($input_raw) {
         return;
     }if($request_message=="/find" || $request_message=="#find"){
         if(strlen($keyword)){
+			if(!$admin){error_report("Find ".$keyword."\nFrom @".$username."-".$name);}
             find($chat_id,$keyword,$message_id);
         }else if(array_key_exists('reply_to_message', $messageobj['message'])){
+			if(!$admin){error_report("Find ".$keyword."\nFrom @".$username."-".$name);}
             find($chat_id,$messageobj['message']['reply_to_message']['text'],$message_id);
         }else{
             send_curl(build_forcereply($chat_id,"`Enter keyword :`",$message_id));
@@ -219,6 +234,7 @@ function send_response($input_raw) {
         return;
     }if($request_message=="/delete" || $request_message=="#delete"){
         if(!$verified){
+			if(!$admin){error_report("Unauthorized Delete request from @".$username."-".$name);}
             send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Delete any files.`"));
             return;
         }
@@ -232,7 +248,7 @@ function send_response($input_raw) {
                 $file = $messageobj['message']['reply_to_message']['document'];
                 $file_name = $file['file_name'];
             }
-
+			if(!$admin){error_report("Delete ".$file_name."\nFrom @".$username."-".$name);}
             delete($file_name,$chat_id);
         }else{
             delete_find($chat_id,$message_id);
@@ -240,6 +256,7 @@ function send_response($input_raw) {
         return;
     }if($request_message=="⛔️"){
         if(!$verified){
+			error_report("Unauthorized Delete request from @".$username."-".$name);
             send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Delete any files.`"));
             return;
         }
@@ -253,6 +270,7 @@ function send_response($input_raw) {
 
     if(array_key_exists('document', $messageobj['message']) || array_key_exists('audio', $messageobj['message'])){
         if(!$verified){
+			error_report("Unauthorized upload request from @".$username."-".$name);
             send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to upload any files.`"));
             return;
         }
@@ -284,7 +302,7 @@ function send_response($input_raw) {
             $new_file = new stdClass();
             $new_file->file_id = $file_id;
             $new_file->name = $file_name;
-            $new_file->$display_name;
+            $new_file->display_name = $display_name;
             $new_file->filetype = $file_type;
             $new_file->user = $username;
             $db->insertObject('aathaapi_files', $new_file);
@@ -294,9 +312,11 @@ function send_response($input_raw) {
             $file->active = 1;
             $db->updateObject('aathaapi_files',$file,'file_id');
             $reply = urlencode("`Enter display name for` - *".$file_name."*");
+			error_report("File Upload ".$file_name."\nFrom @".$username."-".$name);
             send_curl(build_forcereply($chat_id,$reply,$message_id));
         }else{
             $reply = "*".$file_name."* `is already exist`";
+			error_report("Duplicate File Upload ".$file_name."\nFrom @".$username."-".$name);
             send_curl(build_reply($chat_id,$reply));
         }
         return;
@@ -304,10 +324,12 @@ function send_response($input_raw) {
     if($messageobj['message']['reply_to_message']['from']['username']=="AathaapiBot"){
         $bot_reply = $messageobj['message']['reply_to_message']['text'];//botReply
         if($bot_reply=="Enter keyword :"){
+			if(!$admin){error_report("Find ".$message_text."\nFrom @".$username."-".$name);}
             find($chat_id,$message_text,$message_id);
         }
         if(strpos($bot_reply, 'Enter display name') !== false){
             if(!$verified){
+			error_report("Unauthorized Display Name change request from @".$username."-".$name);
     		send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Change any Display Name.`"));
     		return;
 			}
@@ -326,12 +348,15 @@ function send_response($input_raw) {
 `Display name -` *".$check_file['display_name']."*
 `File type    -` *".ucfirst($check_file['filetype']."*"));
             send_curl(build_reply($chat_id,$reply));
+            if($chat_id!=-145097544){send_curl(build_reply(-1001054269939,$reply));}
+
         }
         if($bot_reply=="Enter exact file name you want to delete :"){
             delete($message_text,$chat_id);
         }
         return;
     }
+	if($message_text{0}=="/"||$message_text{0}=="#"){error_report($message_text."\n@".$username."-".$name);}
 
 //end	
 }
