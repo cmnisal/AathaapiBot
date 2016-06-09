@@ -304,7 +304,7 @@ function send_response($input_raw) {
             $new_file->name = $file_name;
             $new_file->display_name = $display_name;
             $new_file->filetype = $file_type;
-            $new_file->user = $username;
+            $new_file->user = $user_id;
             $db->insertObject('aathaapi_files', $new_file);
 
             $file = new stdClass();
