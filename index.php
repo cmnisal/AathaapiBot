@@ -194,10 +194,10 @@ function send_response($input_raw) {
     $keyword = substr($message_text,strlen($request_message)+1,strlen($message_text));
     $chat_id = $messageobj['message']['chat']['id'];
     $user_id = $messageobj['message']['from']['id'];
-    $username = $messageobj['message']['from']['username'];
+    $username = '@'.$messageobj['message']['from']['username'];
 	$name = $messageobj['message']['from']['first_name']." ".$messageobj['message']['from']['last_name'];
     $message_id = $messageobj['message']['message_id'];
-    $admin = in_array($username,array("Nisal","CMNisal","RASMR"));
+    $admin = in_array($username,array("@Nisal","@CMNisal","@RASMR"));
     $verified = (in_array($chat_id,array(196536622,59436507,132666396,120125309,-145097544)) || $admin);
     //chat_id - (Nisal,Sarani,Saminda,Amila,Aathaapi TEST)
 
@@ -220,10 +220,10 @@ function send_response($input_raw) {
         return;
     }if($request_message=="/find" || $request_message=="#find"){
         if(strlen($keyword)){
-			if(!$admin){error_report("Find ".$keyword."\nFrom @".$username."-".$name);}
+			if(!$admin){error_report("Find ".$keyword."\n".$username."-".$name);}
             find($chat_id,$keyword,$message_id);
         }else if(array_key_exists('reply_to_message', $messageobj['message'])){
-			if(!$admin){error_report("Find ".$keyword."\nFrom @".$username."-".$name);}
+			if(!$admin){error_report("Find ".$keyword."\n".$username."-".$name);}
             find($chat_id,$messageobj['message']['reply_to_message']['text'],$message_id);
         }else{
             send_curl(build_forcereply($chat_id,"`Enter keyword :`",$message_id));
@@ -234,7 +234,7 @@ function send_response($input_raw) {
         return;
     }if($request_message=="/delete" || $request_message=="#delete"){
         if(!$verified){
-			if(!$admin){error_report("Unauthorized Delete request from @".$username."-".$name);}
+			if(!$admin){error_report("Unauthorized Delete request from ".$username."-".$name);}
             send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Delete any files.`"));
             return;
         }
@@ -248,7 +248,7 @@ function send_response($input_raw) {
                 $file = $messageobj['message']['reply_to_message']['document'];
                 $file_name = $file['file_name'];
             }
-			if(!$admin){error_report("Delete ".$file_name."\nFrom @".$username."-".$name);}
+			if(!$admin){error_report($file_name."\nDeleted by ".$username."-".$name);}
             delete($file_name,$chat_id);
         }else{
             delete_find($chat_id,$message_id);
@@ -256,7 +256,7 @@ function send_response($input_raw) {
         return;
     }if($request_message=="⛔️"){
         if(!$verified){
-			error_report("Unauthorized Delete request from @".$username."-".$name);
+			error_report("Unauthorized Delete request from ".$username."-".$name);
             send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Delete any files.`"));
             return;
         }
@@ -270,7 +270,7 @@ function send_response($input_raw) {
 
     if(array_key_exists('document', $messageobj['message']) || array_key_exists('audio', $messageobj['message'])){
         if(!$verified){
-			error_report("Unauthorized upload request from @".$username."-".$name);
+			error_report("Unauthorized upload request from ".$username."-".$name);
             send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to upload any files.`"));
             return;
         }
@@ -312,11 +312,11 @@ function send_response($input_raw) {
             $file->active = 1;
             $db->updateObject('aathaapi_files',$file,'file_id');
             $reply = urlencode("`Enter display name for` - *".$file_name."*");
-			error_report("File Upload ".$file_name."\nFrom @".$username."-".$name);
+			error_report($file_name."\n File Uploaded by ".$username."-".$name);
             send_curl(build_forcereply($chat_id,$reply,$message_id));
         }else{
             $reply = "*".$file_name."* `is already exist`";
-			error_report("Duplicate File Upload ".$file_name."\nFrom @".$username."-".$name);
+			error_report("Duplicate File Upload ".$file_name."\n".$username."-".$name);
             send_curl(build_reply($chat_id,$reply));
         }
         return;
@@ -324,12 +324,12 @@ function send_response($input_raw) {
     if($messageobj['message']['reply_to_message']['from']['username']=="AathaapiBot"){
         $bot_reply = $messageobj['message']['reply_to_message']['text'];//botReply
         if($bot_reply=="Enter keyword :"){
-			if(!$admin){error_report("Find ".$message_text."\nFrom @".$username."-".$name);}
+			if(!$admin){error_report("Find ".$message_text."\n".$username."-".$name);}
             find($chat_id,$message_text,$message_id);
         }
         if(strpos($bot_reply, 'Enter display name') !== false){
             if(!$verified){
-			error_report("Unauthorized Display Name change request from @".$username."-".$name);
+			error_report("Unauthorized Display Name change request from ".$username."-".$name);
     		send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Change any Display Name.`"));
     		return;
 			}
@@ -348,15 +348,19 @@ function send_response($input_raw) {
 `Display name -` *".$check_file['display_name']."*
 `File type    -` *".ucfirst($check_file['filetype']."*"));
             send_curl(build_reply($chat_id,$reply));
-            if($chat_id!=-145097544){send_curl(build_reply(-1001054269939,$reply));}
-
+            if($chat_id!=-145097544){send_curl(build_reply(-1001054269939,$reply));
+			
+			}
+			return;
         }
         if($bot_reply=="Enter exact file name you want to delete :"){
             delete($message_text,$chat_id);
+			return;
         }
+		error_report($message_text."\n".$username."-".$name);
         return;
     }
-	if($message_text{0}=="/"||$message_text{0}=="#"){error_report($message_text."\n@".$username."-".$name);}
+	if($message_text{0}=="/"||$message_text{0}=="#"){error_report($message_text."\n".$username."-".$name);}
 
 //end	
 }
