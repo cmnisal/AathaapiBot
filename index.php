@@ -123,7 +123,6 @@ function delete($filename,$chat_id){
     $sql = "SELECT * FROM aathaapi_files WHERE name = '".$filename."' AND active = 1";
     $db->setQuery($sql);
     $check_file = $db->loadAssoc();
-    send_curl(build_reply($chat_id,urlencode($sql)));
     if(empty($check_file)){
         send_curl(build_reply($chat_id,$filename."` File Not Found!`"));
         return;
@@ -133,7 +132,6 @@ function delete($filename,$chat_id){
 `Display name -` *".$check_file['display_name']."*
 `File type    -` *".ucfirst($check_file['filetype']."*"));
     send_curl(build_reply($chat_id,$reply));
-	send_curl(build_reply($chat_id,$reply));
 
     $file = new stdClass();
     $file->name = $filename;
@@ -248,7 +246,7 @@ function send_response($input_raw) {
                 $file = $messageobj['message']['reply_to_message']['document'];
                 $file_name = $file['file_name'];
             }
-			if(!$admin){error_report($file_name."\nDeleted by ".$username."-".$name);}
+			error_report($file_name."\nDeleted by ".$username."-".$name);
             delete($file_name,$chat_id);
         }else{
             delete_find($chat_id,$message_id);
