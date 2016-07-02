@@ -235,8 +235,7 @@ function send_response($input_raw) {
 			if(!$admin){error_report("Unauthorized Delete request from ".$username."-".$name);}
             send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Delete any files.`"));
             return;
-        }
-        if(strlen($keyword)){
+        }else if(strlen($keyword)){
             delete($keyword,$chat_id);
         }else if(array_key_exists('reply_to_message', $messageobj['message'])){
             if(array_key_exists('audio', $messageobj['message'])){
@@ -255,7 +254,7 @@ function send_response($input_raw) {
     }if($request_message=="⛔️"){
         if(!$verified){
 			error_report("Unauthorized Delete request from ".$username."-".$name);
-            send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Delete any files.`"));
+            send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Delete any file(s).`"));
             return;
         }
         delete($keyword,$chat_id);
@@ -322,18 +321,16 @@ function send_response($input_raw) {
     if($messageobj['message']['reply_to_message']['from']['username']=="AathaapiBot"){
         $bot_reply = $messageobj['message']['reply_to_message']['text'];//botReply
         if($bot_reply=="Enter keyword :"){
-			if(!$admin){error_report("Find ".$message_text."\n".$username."-".$name);}
+			error_report("Find ".$message_text."\n".$username."-".$name);
             find($chat_id,$message_text,$message_id);
-        }
-        if(strpos($bot_reply, 'Enter display name') !== false){
+        }else if(strpos($bot_reply, 'Enter display name') !== false){
             if(!$verified){
 			error_report("Unauthorized Display Name change request from ".$username."-".$name);
     		send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Change any Display Name.`"));
     		return;
 			}
             $filename = substr($bot_reply,strpos($bot_reply,'-')+2);
-
-            $file = new stdClass();
+			$file = new stdClass();
             $file->name = $filename;
             $file->display_name = $message_text;
             $db->updateObject('aathaapi_files',$file,'name');
@@ -346,16 +343,18 @@ function send_response($input_raw) {
 `Display name -` *".$check_file['display_name']."*
 `File type    -` *".ucfirst($check_file['filetype']."*"));
             send_curl(build_reply($chat_id,$reply));
-            if($chat_id!=-145097544){send_curl(build_reply(-1001054269939,$reply));
-			
+			send_curl(build_reply(-1001054269939,$reply));
+			return;
+        }else if($bot_reply=="Enter exact file name you want to delete :"){
+            if(!$verified){
+			error_report("Unauthorized Delete request from ".$username."-".$name);
+    		send_curl(build_reply($chat_id,"`Sorry, You are not Authorized to Delete any file(s).`"));
+    		return;
 			}
+			delete($message_text,$chat_id);
 			return;
         }
-        if($bot_reply=="Enter exact file name you want to delete :"){
-            delete($message_text,$chat_id);
-			return;
-        }
-		error_report($message_text."\n".$username."-".$name);
+		//error_report($message_text."\n".$username."-".$name);
         return;
     }
 	if($message_text{0}=="/"||$message_text{0}=="#"){error_report($message_text."\n".$username."-".$name);}
