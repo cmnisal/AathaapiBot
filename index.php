@@ -228,7 +228,7 @@ function send_response($input_raw) {
         }
         return;
     }if($request_message=="📚" || $request_message=="🎥" || $request_message=="🖼" || $request_message=="🔊" || $request_message=="🛠" || $request_message=="📦"){
-        find_with_display_name($keyword,$chat_id);
+        error_report("Download ".$keyword."\n".$username."-".$name);find_with_display_name($keyword,$chat_id);
         return;
     }if($request_message=="/delete" || $request_message=="#delete"){
         if(!$verified){
