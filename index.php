@@ -311,6 +311,7 @@ function send_response($input_raw) {
             $reply = urlencode("`Enter display name for` - *".$file_name."*");
 			error_report($file_name."\n File Uploaded by ".$username."-".$name);
             send_curl(build_forcereply($chat_id,$reply,$message_id));
+			send_curl(build_reply(-1001054269939,$reply));
         }else{
             $reply = "*".$file_name."* `is already exist`";
 			error_report("Duplicate File Upload ".$file_name."\n".$username."-".$name);
