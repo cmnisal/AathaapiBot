@@ -89,7 +89,7 @@ function find($chat_id,$find_keyword,$message_id){
                     $button_text = "📦 ";
             }
             $button_text .= $file_exist[$i]['display_name'];
-            //error_log($button_text);
+            error_log($button_text);
             $keyboard['keyboard'][$i+1][0] = urlencode($button_text);
         }
         send_curl(build_keyboard($chat_id,"`".count($file_exist)." file(s) found!`", $message_id, $keyboard));
