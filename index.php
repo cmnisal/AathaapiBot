@@ -68,7 +68,7 @@ function find($chat_id,$find_keyword,$message_id){
     }else{
         $keyboard = array('keyboard' => array());
         $keyboard['keyboard'][0][0] = "Cancel";
-        for($i = 0; $i < count($file_exist); $i++) {
+        for($i = 0; $i < 130; $i++) {
             switch ($file_exist[$i]['filetype']) {
                 case pdf:
                     $button_text = "📚 ";
