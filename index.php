@@ -26,7 +26,7 @@ function build_keyboard($chat_id, $text, $message_id, $markup) {
     $markup['one_time_keyboard'] = true;
     $markup['selective'] = true;
     $returnvalue = 'https://api.telegram.org/bot'.$GLOBALS['token'].'/sendMessage?chat_id='
-        . $chat_id . '&text=' . $text . '&reply_to_message_id=' . $message_id . '&reply_markup=' . json_encode($markup).'&disable_web_page_preview=true';
+        . $chat_id . '&text=' . $text . '&reply_to_message_id=' . $message_id . '&reply_markup=' . json_encode($markup).'&disable_web_page_preview=true&parse_mode=markdown';
     return $returnvalue;
 }
 function hide_keyboard($chat_id,$message_id) {
