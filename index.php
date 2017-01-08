@@ -93,7 +93,7 @@ function find($chat_id,$find_keyword,$message_id){
                     $button_text = "📦 ";
             }
             $button_text .= $file_exist[$i]['display_name'];
-			$temp_msg.=$button_text;
+			//$temp_msg.=$button_text;
             error_log($button_text);
             $keyboard['keyboard'][$i+1][0] = urlencode($button_text);
         }
