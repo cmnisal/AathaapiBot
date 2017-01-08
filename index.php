@@ -33,13 +33,13 @@ function hide_keyboard($chat_id,$message_id) {
     $markup['hide_keyboard'] = true;
     $markup['selective'] = true;
     $returnvalue = 'https://api.telegram.org/bot'.$GLOBALS['token'].'/sendMessage?chat_id='. $chat_id  . '&reply_to_message_id=' . $message_id . '&text=List Cancelled !&reply_markup=' . json_encode($markup);
-    ////error_log($returnvalue);
+    error_log($returnvalue);
     return $returnvalue;
 }
 function find_with_display_name($find_keyword,$chat_id){
     $db = dbAccess::getInstance();
     $query = "SELECT * FROM aathaapi_files WHERE display_name = '$find_keyword'";
-    //error_log($query);
+    error_log($query);
     $db->setQuery($query);
     $file_exist = $db->loadAssoc();
     if(empty($file_exist)){
@@ -56,13 +56,13 @@ function find($chat_id,$find_keyword,$message_id){
     $db = dbAccess::getInstance();
     $find_keyword = str_replace(' ','%',$find_keyword);
     $query = "SELECT * FROM aathaapi_files WHERE (name LIKE '%".$find_keyword."%' OR display_name LIKE '%".$find_keyword."%' ) AND active = 1 ORDER BY display_name";
-    ////error_log($query);
+    error_log($query);
     $db->setQuery($query);
     $file_exist = $db->loadAssocList();
     if(empty($file_exist)){
         send_curl(build_reply($chat_id,"`No Files Found!`"));
     }else if(count($file_exist)==1){
-        //error_log("1 File");
+        error_log("1 File");
         $file_id = $file_exist[0]['file_id'];
         send_curl(build_document($chat_id,$file_id));
     }else{
@@ -94,7 +94,7 @@ function find($chat_id,$find_keyword,$message_id){
             }
             $button_text .= $file_exist[$i]['display_name'];
 			$file_list = $temp_msg.$button_text;
-            //error_log($button_text);
+            error_log($button_text);
             $keyboard['keyboard'][$i+1][0] = urlencode($button_text);
         }
 		
@@ -106,7 +106,7 @@ function delete_find($chat_id,$message_id){
     $db = dbAccess::getInstance();
     $find_keyword = str_replace(' ','%',$find_keyword);
     $query = "SELECT * FROM aathaapi_files WHERE active = 1 ORDER BY display_name";
-    ////error_log($query);
+    error_log($query);
     $db->setQuery($query);
     $file_exist = $db->loadAssocList();
     if(empty($file_exist)){
@@ -115,7 +115,7 @@ function delete_find($chat_id,$message_id){
         $keyboard = array('keyboard' => array());
         $keyboard['keyboard'][0][0] = "Cancel";
         for($i = 0; $i < count($file_exist); $i++) {
-            //error_log("Delete More Files");
+            error_log("Delete More Files");
             $button_text = "";
             $button_text .= "⛔️ ".$file_exist[$i]['name'];
             $keyboard['keyboard'][$i+1][0] = urlencode($button_text);
@@ -144,7 +144,7 @@ function delete($filename,$chat_id){
     $file->active = 0;
     $db->updateObject('aathaapi_files',$file,'name');
 
-    //error_log($query);
+    error_log($query);
     $db->setQuery($sql);
     $file_exist = $db->loadAssoc();
     if(empty($file_exist)){
@@ -266,7 +266,7 @@ function send_response($input_raw) {
         delete($keyword,$chat_id);
         return;
     }if ($request_message == 'cancel') {
-        //error_log("Cancel");
+        error_log("Cancel");
         send_curl(hide_keyboard($chat_id,$message_id));
         return;
     }
