@@ -70,7 +70,7 @@ function find($chat_id,$find_keyword,$message_id){
         $keyboard['keyboard'][0][0] = "Cancel";
 		
 		$temp_msg = "`".count($file_exist)." file(s) found!`
-		"
+		";
 		
 		for($i = 0; $i < 130; $i++) {
             switch ($file_exist[$i]['filetype']) {
