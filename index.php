@@ -6,7 +6,7 @@ $token = '238992121:AAGPTHmkAxO0o9OcG5xJx96k77HFCQCm7Lc';
 
 function build_reply($chat_id, $text) {
     $returnvalue = 'https://api.telegram.org/bot'.$GLOBALS['token'].'/sendMessage?chat_id='
-        . $chat_id . '&text= ' . $text.' &disable_web_page_preview=true&parse_mode=markdown';
+        . $chat_id . '&text= ' . urlencode($text).' &disable_web_page_preview=true&parse_mode=markdown';
     return $returnvalue;
 }
 function build_forcereply($chat_id,$text,$message_id) {
