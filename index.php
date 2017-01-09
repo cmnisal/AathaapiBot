@@ -201,7 +201,7 @@ function send_response($input_raw) {
     $username = '@'.$messageobj['message']['from']['username'];
 	$name = $messageobj['message']['from']['first_name']." ".$messageobj['message']['from']['last_name'];
     $message_id = $messageobj['message']['message_id'];
-    $admin = in_array($username,array("@Nisal","@CMNisal","@RASMR"));
+    $admin = in_array($username,array("@Nisal","@CMNisal","@RASMR","@saminda"));
     $verified = (in_array($chat_id,array(196536622,59436507,132666396,120125309,-145097544)) || $admin);
     //chat_id - (Nisal,Sarani,Saminda,Amila,Aathaapi TEST)
 
