@@ -98,7 +98,7 @@ function find($chat_id,$find_keyword,$message_id){
         }
 		error_log($file_list_msg);
         send_curl(build_keyboard($chat_id,$temp_msg, $message_id, $keyboard));
-		send_curl(build_reply($chat_id,$file_list_msg));
+		send_curl(build_reply($chat_id,$file_list_msg));//File Message
         return;
     }
 }
