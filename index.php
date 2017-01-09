@@ -92,11 +92,11 @@ function find($chat_id,$find_keyword,$message_id){
                     $button_text = "📦 ";
             }
             $button_text .= $file_exist[$i]['display_name'];
-			$file_list_msg.=$button_text;
-            error_log('/dl'.$file_exist[$i]['uid']." ".$button_text);
+			$file_list_msg.='/dl'.$file_exist[$i]['uid']." ".$button_text."\n";
+            
             $keyboard['keyboard'][$i+1][0] = urlencode($button_text);
         }
-		
+		error_log($file_list_msg);
         send_curl(build_keyboard($chat_id,$temp_msg, $message_id, $keyboard));
         return;
     }
