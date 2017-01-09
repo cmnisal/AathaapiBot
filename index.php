@@ -70,7 +70,7 @@ function find($chat_id,$find_keyword,$message_id){
         $keyboard['keyboard'][0][0] = "Cancel";
 		
 		$temp_msg = "`".count($file_exist)." file(s) found!`";
-		
+		$file_list_msg = "";
 		for($i = 0; $i < 130; $i++) {
             switch ($file_exist[$i]['filetype']) {
                 case pdf:
@@ -92,8 +92,8 @@ function find($chat_id,$find_keyword,$message_id){
                     $button_text = "📦 ";
             }
             $button_text .= $file_exist[$i]['display_name'];
-			//$temp_msg.=$button_text;
-            error_log($button_text);
+			$file_list_msg.=$button_text;
+            error_log('/dl'.$file_exist[$i]['uid']." ".$button_text);
             $keyboard['keyboard'][$i+1][0] = urlencode($button_text);
         }
 		
