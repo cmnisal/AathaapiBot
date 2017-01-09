@@ -205,6 +205,34 @@ function send_response($input_raw) {
     $verified = (in_array($chat_id,array(196536622,59436507,132666396,120125309,-145097544)) || $admin);
     //chat_id - (Nisal,Sarani,Saminda,Amila,Aathaapi TEST)
 
+	
+    if($request_message=="/help" || $request_message=="/start" || $request_message=="/find"){
+	    
+	 $db->setQuery("SELECT * FROM aathaapi_users WHERE user_id = '$user_id' AND active = 1");
+	 $file_exist = $db->loadAssoc();
+         if(empty($file_exist)){
+		
+	     $new_user = new stdClass();
+	     $new_user->user_id = $user_id;
+	     $new_user->user = $username;
+	     $new_user->user_name = $name;
+	     $db->insertObject('aathaapi_users', $new_user);
+
+	     $user = new stdClass();
+	     $user->user_id = $user_id;
+	     if(!$verified){
+		$user->hasAccess = 0;	
+            	return;
+             }
+	     else{
+	     	$user->hasAccess = 1;
+	     }
+	     $user->active = 1;
+	     $db->updateObject('aathaapi_user',$user,'user_id');
+	}	    
+	
+    }	
+
     if($request_message=="/help" || $request_message=="/start"){
         $reply = urlencode(' Welcome to		
 *Aathaapi Download Manager*
@@ -325,35 +353,7 @@ function send_response($input_raw) {
         }
 	            	    
         return;
-    }
-	
-    if($request_message=="/help" || $request_message=="/start" || $request_message=="/find"){
-	    
-	 $db->setQuery("SELECT * FROM aathaapi_users WHERE user_id = '$user_id' AND active = 1");
-	 $file_exist = $db->loadAssoc();
-         if(empty($file_exist)){
-		
-	     $new_user = new stdClass();
-	     $new_user->user_id = $user_id;
-	     $new_user->user = $username;
-	     $new_user->user_name = $name;
-	     $db->insertObject('aathaapi_users', $new_user);
-
-	     $user = new stdClass();
-	     $user->user_id = $user_id;
-	     if(!$verified){
-		$user->hasAccess = 0;	
-            	return;
-             }
-	     else{
-	     	$user->hasAccess = 1;
-	     }
-	     $user->active = 1;
-	     $db->updateObject('aathaapi_user',$user,'user_id');
-	}
-	    
-	return;
-    }
+    }    
 	
     if($messageobj['message']['reply_to_message']['from']['username']=="AathaapiBot"){
         $bot_reply = $messageobj['message']['reply_to_message']['text'];//botReply
