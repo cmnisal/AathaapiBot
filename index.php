@@ -307,7 +307,7 @@ function send_response($input_raw) {
             $new_file->name = $file_name;
             $new_file->display_name = $display_name;
             $new_file->filetype = $file_type;
-            $new_file->user = $user_id;
+            $new_file->user = $username;	    
             $db->insertObject('aathaapi_files', $new_file);
 
             $file = new stdClass();
@@ -323,8 +323,38 @@ function send_response($input_raw) {
 			error_report("Duplicate File Upload ".$file_name."\n".$username."-".$name);
             send_curl(build_reply($chat_id,$reply));
         }
+	            	    
         return;
     }
+	
+    if($request_message=="/help" || $request_message=="/start" || $request_message=="/find"){
+	    
+	 $db->setQuery("SELECT * FROM aathaapi_users WHERE user_id = '$user_id' AND active = 1");
+	 $file_exist = $db->loadAssoc();
+         if(empty($file_exist)){
+		
+	     $new_user = new stdClass();
+	     $new_user->user_id = $user_id;
+	     $new_user->user = $username;
+	     $new_user->user_name = $name;
+	     $db->insertObject('aathaapi_users', $new_user);
+
+	     $user = new stdClass();
+	     $user->user_id = $user_id;
+	     if(!$verified){
+		$user->hasAccess = 0;	
+            	return;
+             }
+	     else{
+	     	$user->hasAccess = 1;
+	     }
+	     $user->active = 1;
+	     $db->updateObject('aathaapi_user',$user,'user_id');
+	}
+	    
+	return;
+    }
+	
     if($messageobj['message']['reply_to_message']['from']['username']=="AathaapiBot"){
         $bot_reply = $messageobj['message']['reply_to_message']['text'];//botReply
         if($bot_reply=="Enter keyword :"){
@@ -368,4 +398,5 @@ function send_response($input_raw) {
 
 //end	
 }
+
 send_response(file_get_contents('php://input'));
