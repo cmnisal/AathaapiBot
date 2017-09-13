@@ -96,7 +96,7 @@ function find($chat_id,$find_keyword,$message_id){
             
             $keyboard['keyboard'][$i+1][0] = urlencode($button_text);
         }
-		error_log($file_list_msg);
+		//error_log($file_list_msg);
         send_curl(build_keyboard($chat_id,$temp_msg, $message_id, $keyboard));
 		//send_curl(build_reply($chat_id,$file_list_msg));//File Message
         return;
@@ -205,7 +205,7 @@ function send_response($input_raw) {
     $verified = (in_array($chat_id,array(196536622,59436507,132666396,120125309,-145097544)) || $admin);
     //chat_id - (Nisal,Sarani,Saminda,Amila,Aathaapi TEST)
 
-	
+	/*
     if($request_message=="/help" || $request_message=="/start" || $request_message=="/find"){
 	    
 	 $db->setQuery("SELECT * FROM aathaapi_users WHERE user_id = '$user_id' AND active = 1");
@@ -231,7 +231,7 @@ function send_response($input_raw) {
 	     $db->updateObject('aathaapi_user',$user,'user_id');
 	}	    
 	
-    }	
+    }	*/
 
     if($request_message=="/help" || $request_message=="/start"){
         $reply = urlencode(' Welcome to		
