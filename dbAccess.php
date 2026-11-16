@@ -8,10 +8,10 @@
  */
 class dbAccess {
 	protected static $dParams = array(
-						'host' 		=> 'localhost',
-						'user' 		=> 'snifbiz1_admin',
-						'password' 	=> 'AlphA1694',
-						'database'	=> 'snifbiz1_snifferbot'
+						'host' 		=> '',
+						'user' 		=> '',
+						'password' 	=> '',
+						'database'	=> ''
 					);
 
 	
@@ -57,10 +57,10 @@ class dbAccess {
      */
     final public static function getInstance() {
 		if ( is_null(dbAccess::$dbInstance) ) {
-			dbAccess::$dbInstance = new dbAccess(	dbAccess::$dParams['host'], 
-													dbAccess::$dParams['user'], 
-													dbAccess::$dParams['password'], 
-													dbAccess::$dParams['database']
+			dbAccess::$dbInstance = new dbAccess(	getenv('DB_HOST'), 
+													getenv('DB_USER'), 
+													getenv('DB_PASSWORD'), 
+													getenv('DB_DATABASE')
 												);
 		}
 		return dbAccess::$dbInstance;
