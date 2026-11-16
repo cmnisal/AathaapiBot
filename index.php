@@ -2,7 +2,7 @@
 /*
  * Download Manager Bot for www.aathaapi.org
  */
-$token = '238992121:AAGPTHmkAxO0o9OcG5xJx96k77HFCQCm7Lc';
+$token = getenv('TELEGRAM_BOT_TOKEN');
 
 function build_reply($chat_id, $text) {
     $returnvalue = 'https://api.telegram.org/bot'.$GLOBALS['token'].'/sendMessage?chat_id='
